@@ -2,18 +2,20 @@ package gotraceutil
 
 import (
 	"context"
+
+	uuid "github.com/satori/go.uuid"
 )
 
-var (
-	generateTraceId func() string
-)
+var traceIdGenerator = func() string {
+	return uuid.NewV4().String()
+}
 
 func SetTraceIdGenerator(fn func() string) {
-	generateTraceId = fn
+	traceIdGenerator = fn
 }
 
 func Trace(ctx context.Context) context.Context {
-	return context.WithValue(ctx, traceIdKey, generateTraceId())
+	return context.WithValue(ctx, traceIdKey, traceIdGenerator())
 }
 
 func Parse(ctx context.Context) map[string]interface{} {
