@@ -6,9 +6,11 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-var traceIdGenerator = func() string {
+var DefaultTraceIdGenerator = func() string {
 	return uuid.NewV4().String()
 }
+
+var traceIdGenerator func() string
 
 func SetTraceIdGenerator(fn func() string) {
 	traceIdGenerator = fn
