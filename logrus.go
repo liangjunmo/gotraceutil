@@ -4,17 +4,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type logrusHook struct{}
+type LogrusHook struct{}
 
 func NewLogrusHook() logrus.Hook {
-	return &logrusHook{}
+	return &LogrusHook{}
 }
 
-func (hook *logrusHook) Levels() []logrus.Level {
+func (hook *LogrusHook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }
 
-func (hook *logrusHook) Fire(entry *logrus.Entry) error {
+func (hook *LogrusHook) Fire(entry *logrus.Entry) error {
 	for key, val := range Parse(entry.Context) {
 		entry.Data[key] = val
 	}
