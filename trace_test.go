@@ -12,11 +12,11 @@ import (
 func TestTrace(t *testing.T) {
 	traceId := "trace-id-unique-string"
 
-	gotraceutil.SetTraceIdGenerator(func() string {
+	gotraceutil.SetTraceIDGenerator(func() string {
 		return traceId
 	})
 
-	gotraceutil.SetTraceIdKey("TraceId")
+	gotraceutil.SetTraceIDKey("TraceId")
 	gotraceutil.AppendTraceKeys([]string{"ClientId"})
 
 	ctx := gotraceutil.Trace(context.Background())

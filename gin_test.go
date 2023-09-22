@@ -16,7 +16,7 @@ func TestGinMiddleware(t *testing.T) {
 	traceId := "trace-id-unique-string"
 	clientId := "client-id-unique-string"
 
-	gotraceutil.SetTraceIdGenerator(func() string {
+	gotraceutil.SetTraceIDGenerator(func() string {
 		return traceId
 	})
 

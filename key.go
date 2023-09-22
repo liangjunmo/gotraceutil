@@ -1,13 +1,13 @@
 package gotraceutil
 
 var (
-	traceIdKey string = "TraceId"
-	traceKeys         = []string{traceIdKey}
+	traceIDKey string = "TraceId"
+	traceKeys         = []string{traceIDKey}
 )
 
-func SetTraceIdKey(key string) {
-	traceIdKey = key
-	traceKeys[0] = traceIdKey
+func SetTraceIDKey(key string) {
+	traceIDKey = key
+	traceKeys[0] = traceIDKey
 }
 
 func AppendTraceKeys(keys []string) {

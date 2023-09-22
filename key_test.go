@@ -12,11 +12,11 @@ func TestKeys(t *testing.T) {
 	keys := gotraceutil.GetTraceKeys()
 	assert.Equal(t, "TraceId", keys[0])
 
-	gotraceutil.SetTraceIdKey("RequestId")
+	gotraceutil.SetTraceIDKey("RequestId")
 	keys = gotraceutil.GetTraceKeys()
 	assert.Equal(t, "RequestId", keys[0])
 
-	gotraceutil.SetTraceIdKey("TraceId")
+	gotraceutil.SetTraceIDKey("TraceId")
 	gotraceutil.AppendTraceKeys([]string{"ClientId"})
 	keys = gotraceutil.GetTraceKeys()
 	assert.Equal(t, "TraceId", keys[0])
