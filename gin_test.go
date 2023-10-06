@@ -13,14 +13,15 @@ import (
 )
 
 func TestGinMiddleware(t *testing.T) {
-	traceId := "trace-id-unique-string"
-	clientId := "client-id-unique-string"
+	traceID := "trace-id"
+	clientID := "client-id"
+	clientIDKey := "ClientID"
 
 	gotraceutil.SetTraceIDGenerator(func() string {
-		return traceId
+		return traceID
 	})
 
-	gotraceutil.AppendTraceKeys([]string{"ClientId"})
+	gotraceutil.AppendTraceKeys([]string{clientIDKey})
 
 	router := gin.Default()
 
@@ -29,8 +30,8 @@ func TestGinMiddleware(t *testing.T) {
 	router.GET("/", func(c *gin.Context) {
 		ctx := c.Request.Context()
 		labels := gotraceutil.Parse(ctx)
-		assert.Equal(t, traceId, labels["TraceId"])
-		assert.Equal(t, clientId, labels["ClientId"])
+		assert.Equal(t, traceID, labels[gotraceutil.DefaultTraceIDKey])
+		assert.Equal(t, clientID, labels[clientIDKey])
 	})
 
 	server := &http.Server{
@@ -41,13 +42,14 @@ func TestGinMiddleware(t *testing.T) {
 	go func() {
 		err := server.ListenAndServe()
 		if err != http.ErrServerClosed {
-			t.Log(err)
+			t.Error(err)
+			return
 		}
 	}()
 
 	_, err := grequests.Get("http://127.0.0.1:8000/", &grequests.RequestOptions{
 		Headers: map[string]string{
-			"ClientId": clientId,
+			clientIDKey: clientID,
 		},
 	})
 	assert.Nil(t, err)

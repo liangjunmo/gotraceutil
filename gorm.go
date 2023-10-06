@@ -17,7 +17,7 @@ type gormLogger struct {
 	traceStr, traceErrStr, traceWarnStr string
 }
 
-func NewGormLogger(config gormlogger.Config) gormlogger.Interface {
+func NewGORMLogger(config gormlogger.Config) gormlogger.Interface {
 	var (
 		infoStr      = "%s\n[info] "
 		warnStr      = "%s\n[warn] "

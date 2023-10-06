@@ -8,17 +8,19 @@ import (
 	"github.com/liangjunmo/gotraceutil"
 )
 
-func TestKeys(t *testing.T) {
+func TestKey(t *testing.T) {
 	keys := gotraceutil.GetTraceKeys()
-	assert.Equal(t, "TraceId", keys[0])
+	assert.Equal(t, gotraceutil.DefaultTraceIDKey, keys[0])
 
-	gotraceutil.SetTraceIDKey("RequestId")
+	traceIDKey := "RequestID"
+	gotraceutil.SetTraceIDKey(traceIDKey)
 	keys = gotraceutil.GetTraceKeys()
-	assert.Equal(t, "RequestId", keys[0])
+	assert.Equal(t, traceIDKey, keys[0])
 
-	gotraceutil.SetTraceIDKey("TraceId")
-	gotraceutil.AppendTraceKeys([]string{"ClientId"})
+	clientIDKey := "clientID"
+	gotraceutil.ResetTraceKeys()
+	gotraceutil.AppendTraceKeys([]string{clientIDKey})
 	keys = gotraceutil.GetTraceKeys()
-	assert.Equal(t, "TraceId", keys[0])
-	assert.Equal(t, "ClientId", keys[1])
+	assert.Equal(t, gotraceutil.DefaultTraceIDKey, keys[0])
+	assert.Equal(t, clientIDKey, keys[1])
 }
