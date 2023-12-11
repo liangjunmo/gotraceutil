@@ -1,28 +1,11 @@
 package gotraceutil
 
-var (
-	traceIDKey = DefaultTraceIDKey
-	traceKeys  = []string{traceIDKey}
-)
+var tracingKeys = []string{"TracingID"}
 
-const (
-	DefaultTraceIDKey = "TraceID"
-)
-
-func SetTraceIDKey(key string) {
-	traceIDKey = key
-	traceKeys[0] = traceIDKey
+func GetTracingKeys() []string {
+	return tracingKeys
 }
 
-func AppendTraceKeys(keys []string) {
-	traceKeys = append(traceKeys, keys...)
-}
-
-func ResetTraceKeys() {
-	traceIDKey = DefaultTraceIDKey
-	traceKeys = []string{traceIDKey}
-}
-
-func GetTraceKeys() []string {
-	return traceKeys
+func SetTracingKeys(keys []string) {
+	tracingKeys = keys
 }

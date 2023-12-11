@@ -6,18 +6,16 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-var DefaultTraceIDGenerator = func() string {
+var tracingIDGenerator = func() string {
 	return uuid.NewV4().String()
 }
 
-var traceIDGenerator func() string
-
-func SetTraceIDGenerator(fn func() string) {
-	traceIDGenerator = fn
+func SetTracingIDGenerator(fn func() string) {
+	tracingIDGenerator = fn
 }
 
 func Trace(ctx context.Context) context.Context {
-	return context.WithValue(ctx, traceIDKey, traceIDGenerator())
+	return context.WithValue(ctx, tracingKeys[0], tracingIDGenerator())
 }
 
 func Parse(ctx context.Context) map[string]interface{} {
@@ -27,7 +25,7 @@ func Parse(ctx context.Context) map[string]interface{} {
 
 	var labels map[string]interface{}
 
-	for _, key := range traceKeys {
+	for _, key := range tracingKeys {
 		val := ctx.Value(key)
 		if val == nil {
 			continue

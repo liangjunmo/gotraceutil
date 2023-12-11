@@ -10,11 +10,11 @@ func GinMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 
-		for _, key := range traceKeys {
+		for _, key := range tracingKeys {
 			ctx = context.WithValue(ctx, key, c.GetHeader(key))
 		}
 
-		if traceID := ctx.Value(traceIDKey); traceID == "" {
+		if tracingID := ctx.Value(tracingKeys[0]); tracingID == "" {
 			ctx = Trace(ctx)
 		}
 

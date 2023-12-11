@@ -10,6 +10,10 @@ import (
 )
 
 func TestLogrusHook(t *testing.T) {
+	tracingIDKey := "TracingID"
+
+	gotraceutil.SetTracingKeys([]string{tracingIDKey})
+
 	log := logrus.New()
 
 	log.SetFormatter(&logrus.TextFormatter{
@@ -18,11 +22,9 @@ func TestLogrusHook(t *testing.T) {
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
 
-	log.AddHook(
-		gotraceutil.NewLogrusHook(),
-	)
+	log.AddHook(gotraceutil.NewLogrusHook())
 
-	ctx := context.WithValue(context.Background(), gotraceutil.DefaultTraceIDKey, "trace-id")
+	ctx := context.WithValue(context.Background(), tracingIDKey, "test")
 
-	log.WithContext(ctx).Error("error message with TraceID")
+	log.WithContext(ctx).Error("error message with TracingID")
 }

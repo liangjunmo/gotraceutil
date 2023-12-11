@@ -9,18 +9,9 @@ import (
 )
 
 func TestKey(t *testing.T) {
-	keys := gotraceutil.GetTraceKeys()
-	assert.Equal(t, gotraceutil.DefaultTraceIDKey, keys[0])
-
-	traceIDKey := "RequestID"
-	gotraceutil.SetTraceIDKey(traceIDKey)
-	keys = gotraceutil.GetTraceKeys()
-	assert.Equal(t, traceIDKey, keys[0])
-
-	clientIDKey := "clientID"
-	gotraceutil.ResetTraceKeys()
-	gotraceutil.AppendTraceKeys([]string{clientIDKey})
-	keys = gotraceutil.GetTraceKeys()
-	assert.Equal(t, gotraceutil.DefaultTraceIDKey, keys[0])
-	assert.Equal(t, clientIDKey, keys[1])
+	tracingKeys := []string{"TracingID", "ClientID"}
+	gotraceutil.SetTracingKeys(tracingKeys)
+	keys := gotraceutil.GetTracingKeys()
+	assert.Equal(t, tracingKeys[0], keys[0])
+	assert.Equal(t, tracingKeys[1], keys[1])
 }

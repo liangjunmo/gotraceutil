@@ -13,15 +13,16 @@ import (
 )
 
 func TestGinMiddleware(t *testing.T) {
-	traceID := "trace-id"
-	clientID := "client-id"
+	tracingIDKey := "TracingID"
+	tracingID := "test"
 	clientIDKey := "ClientID"
+	clientID := "test"
 
-	gotraceutil.SetTraceIDGenerator(func() string {
-		return traceID
+	gotraceutil.SetTracingKeys([]string{tracingIDKey, clientIDKey})
+
+	gotraceutil.SetTracingIDGenerator(func() string {
+		return tracingID
 	})
-
-	gotraceutil.AppendTraceKeys([]string{clientIDKey})
 
 	router := gin.Default()
 
@@ -30,7 +31,7 @@ func TestGinMiddleware(t *testing.T) {
 	router.GET("/", func(c *gin.Context) {
 		ctx := c.Request.Context()
 		labels := gotraceutil.Parse(ctx)
-		assert.Equal(t, traceID, labels[gotraceutil.DefaultTraceIDKey])
+		assert.Equal(t, tracingID, labels[tracingIDKey])
 		assert.Equal(t, clientID, labels[clientIDKey])
 	})
 
