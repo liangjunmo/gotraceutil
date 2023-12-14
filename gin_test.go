@@ -2,6 +2,7 @@ package gotraceutil_test
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"testing"
 
@@ -14,9 +15,10 @@ import (
 
 func TestGinMiddleware(t *testing.T) {
 	tracingIDKey := "TracingID"
-	tracingID := "test"
+	tracingID := "tracingID"
+
 	clientIDKey := "ClientID"
-	clientID := "test"
+	clientID := "clientID"
 
 	gotraceutil.SetTracingKeys([]string{tracingIDKey, clientIDKey})
 
@@ -42,7 +44,7 @@ func TestGinMiddleware(t *testing.T) {
 
 	go func() {
 		err := server.ListenAndServe()
-		if err != http.ErrServerClosed {
+		if !errors.Is(err, http.ErrServerClosed) {
 			t.Error(err)
 			return
 		}

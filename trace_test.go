@@ -11,7 +11,7 @@ import (
 
 func TestTrace(t *testing.T) {
 	tracingIDKey := "TracingID"
-	tracingID := "test"
+	tracingID := "tracingID"
 
 	gotraceutil.SetTracingKeys([]string{tracingIDKey})
 

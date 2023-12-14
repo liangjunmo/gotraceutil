@@ -14,7 +14,8 @@ func GinMiddleware() gin.HandlerFunc {
 			ctx = context.WithValue(ctx, key, c.GetHeader(key))
 		}
 
-		if tracingID := ctx.Value(tracingKeys[0]); tracingID == "" {
+		tracingID := ctx.Value(tracingKeys[0])
+		if tracingID == "" {
 			ctx = Trace(ctx)
 		}
 

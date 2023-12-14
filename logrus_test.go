@@ -24,7 +24,7 @@ func TestLogrusHook(t *testing.T) {
 
 	log.AddHook(gotraceutil.NewLogrusHook())
 
-	ctx := context.WithValue(context.Background(), tracingIDKey, "test")
+	ctx := context.WithValue(context.Background(), tracingIDKey, "tracingID")
 
 	log.WithContext(ctx).Error("error message with TracingID")
 }
