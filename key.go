@@ -1,6 +1,6 @@
 package gotraceutil
 
-var tracingKeys = []string{"TracingID"}
+var tracingKeys []string
 
 func GetTracingKeys() []string {
 	return tracingKeys
