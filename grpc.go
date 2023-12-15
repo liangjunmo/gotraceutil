@@ -40,15 +40,17 @@ func GRPCUnaryClientInterceptor(ctx context.Context, method string, req, reply a
 	}
 
 	for _, key := range tracingKeys {
-		if _, ok := md[strings.ToLower(key)]; ok {
-			delete(md, strings.ToLower(key))
+		mdKey := strings.ToLower(key)
+
+		if _, ok := md[mdKey]; ok {
+			delete(md, mdKey)
 		}
 
 		val := ctx.Value(key)
 		if val == nil {
-			md[key] = []string{""}
+			md[mdKey] = []string{""}
 		} else {
-			md[key] = []string{val.(string)}
+			md[mdKey] = []string{val.(string)}
 		}
 	}
 
