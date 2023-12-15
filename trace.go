@@ -15,27 +15,23 @@ func SetTracingIDGenerator(fn func() string) {
 }
 
 func Trace(ctx context.Context) context.Context {
-	return context.WithValue(ctx, tracingKeys[0], tracingIDGenerator())
+	return context.WithValue(ctx, tracingIDKey, tracingIDGenerator())
 }
 
-func Parse(ctx context.Context) map[string]interface{} {
+func Parse(ctx context.Context) map[string]string {
 	if ctx == nil {
 		return nil
 	}
 
-	var labels map[string]interface{}
+	labels := make(map[string]string)
 
 	for _, key := range tracingKeys {
 		val := ctx.Value(key)
 		if val == nil {
-			continue
+			labels[key] = ""
+		} else {
+			labels[key] = val.(string)
 		}
-
-		if labels == nil {
-			labels = make(map[string]interface{})
-		}
-
-		labels[key] = val
 	}
 
 	return labels

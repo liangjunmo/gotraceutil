@@ -11,17 +11,17 @@ import (
 
 func TestTrace(t *testing.T) {
 	tracingIDKey := "TracingID"
-	tracingID := "tracingID"
+	tracingIDVal := "tracing-id"
 
 	gotraceutil.SetTracingKeys([]string{tracingIDKey})
 
 	gotraceutil.SetTracingIDGenerator(func() string {
-		return tracingID
+		return tracingIDVal
 	})
 
 	ctx := gotraceutil.Trace(context.Background())
-	assert.Equal(t, tracingID, ctx.Value(tracingIDKey))
+	assert.Equal(t, tracingIDVal, ctx.Value(tracingIDKey))
 
 	labels := gotraceutil.Parse(ctx)
-	assert.Equal(t, tracingID, labels[tracingIDKey])
+	assert.Equal(t, tracingIDVal, labels[tracingIDKey])
 }
