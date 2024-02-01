@@ -2,16 +2,14 @@ package gotraceutil
 
 import (
 	"context"
-
-	uuid "github.com/satori/go.uuid"
 )
 
-var tracingIDGenerator = func() string {
-	return uuid.NewV4().String()
-}
+type TracingIDGenerator func() string
 
-func SetTracingIDGenerator(fn func() string) {
-	tracingIDGenerator = fn
+var tracingIDGenerator TracingIDGenerator
+
+func SetTracingIDGenerator(generator TracingIDGenerator) {
+	tracingIDGenerator = generator
 }
 
 func Trace(ctx context.Context) context.Context {
@@ -27,6 +25,7 @@ func Parse(ctx context.Context) map[string]string {
 
 	for _, key := range tracingKeys {
 		val := ctx.Value(key)
+
 		if val == nil {
 			labels[key] = ""
 		} else {

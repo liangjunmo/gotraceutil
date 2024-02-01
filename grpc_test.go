@@ -1,57 +1,70 @@
-package gotraceutil_test
+package gotraceutil
 
 import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/liangjunmo/gotraceutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGRPCUnaryServerInterceptor(t *testing.T) {
+	resetTracingKeys()
+
 	tracingIDKey := "TracingID"
-	tracingIDVal := "tracing-id"
+	tracingIDValue := "TracingValue"
 
 	clientIDKey := "ClientID"
-	clientIDVal := "client-id"
+	clientIDValue := "ClientValue"
 
-	gotraceutil.SetTracingKeys([]string{tracingIDKey, clientIDKey})
+	SetTracingIDKey(tracingIDKey)
 
-	gotraceutil.SetTracingIDGenerator(func() string {
-		return tracingIDVal
+	SetTracingIDGenerator(func() string {
+		return tracingIDValue
 	})
+
+	AppendTracingKeys([]string{clientIDKey})
 
 	md := metadata.New(map[string]string{
-		clientIDKey: clientIDVal,
+		clientIDKey: clientIDValue,
 	})
-	ctx := metadata.NewIncomingContext(context.Background(), md)
+
+	ctx := context.Background()
+	ctx = metadata.NewIncomingContext(ctx, md)
 
 	handler := func(ctx context.Context, req any) (any, error) {
-		assert.Equal(t, tracingIDVal, ctx.Value(tracingIDKey))
-		assert.Equal(t, clientIDVal, ctx.Value(clientIDKey))
+		require.Equal(t, tracingIDValue, ctx.Value(tracingIDKey))
+		require.Equal(t, clientIDValue, ctx.Value(clientIDKey))
 
 		return nil, nil
 	}
 
-	_, err := gotraceutil.GRPCUnaryServerInterceptor(ctx, nil, nil, handler)
-	assert.Nil(t, err)
+	_, err := GRPCUnaryServerInterceptor(ctx, nil, nil, handler)
+	require.Nil(t, err)
 }
 
 func TestGRPCUnaryClientInterceptor(t *testing.T) {
+	resetTracingKeys()
+
 	tracingIDKey := "TracingID"
-	tracingIDVal := "tracing-id"
+	tracingIDValue := "TracingValue"
 
 	clientIDKey := "ClientID"
-	clientIDVal := "client-id"
+	clientIDValue := "ClientValue"
 
-	gotraceutil.SetTracingKeys([]string{tracingIDKey, clientIDKey})
+	SetTracingIDKey(tracingIDKey)
+
+	SetTracingIDGenerator(func() string {
+		return tracingIDValue
+	})
+
+	AppendTracingKeys([]string{clientIDKey})
 
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, tracingIDKey, tracingIDVal)
-	ctx = context.WithValue(ctx, clientIDKey, clientIDVal)
+	ctx = context.WithValue(ctx, tracingIDKey, tracingIDValue)
+	ctx = context.WithValue(ctx, clientIDKey, clientIDValue)
 
 	md := metadata.New(map[string]string{
 		tracingIDKey: "",
@@ -60,12 +73,12 @@ func TestGRPCUnaryClientInterceptor(t *testing.T) {
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	handler := func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-		assert.Equal(t, tracingIDVal, ctx.Value(tracingIDKey))
-		assert.Equal(t, clientIDVal, ctx.Value(clientIDKey))
+		require.Equal(t, tracingIDValue, ctx.Value(tracingIDKey))
+		require.Equal(t, clientIDValue, ctx.Value(clientIDKey))
 
 		return nil
 	}
 
-	err := gotraceutil.GRPCUnaryClientInterceptor(ctx, "", nil, nil, nil, handler, nil)
-	assert.Nil(t, err)
+	err := GRPCUnaryClientInterceptor(ctx, "", nil, nil, nil, handler, nil)
+	require.Nil(t, err)
 }

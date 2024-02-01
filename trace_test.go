@@ -1,27 +1,37 @@
-package gotraceutil_test
+package gotraceutil
 
 import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
-	"github.com/liangjunmo/gotraceutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTrace(t *testing.T) {
+	resetTracingKeys()
+
 	tracingIDKey := "TracingID"
-	tracingIDVal := "tracing-id"
+	tracingIDValue := "TracingValue"
 
-	gotraceutil.SetTracingKeys([]string{tracingIDKey})
+	SetTracingIDKey(tracingIDKey)
 
-	gotraceutil.SetTracingIDGenerator(func() string {
-		return tracingIDVal
+	SetTracingIDGenerator(func() string {
+		return tracingIDValue
 	})
 
-	ctx := gotraceutil.Trace(context.Background())
-	assert.Equal(t, tracingIDVal, ctx.Value(tracingIDKey))
+	ctx := context.Background()
+	ctx = Trace(ctx)
+	require.Equal(t, tracingIDValue, ctx.Value(tracingIDKey))
+}
 
-	labels := gotraceutil.Parse(ctx)
-	assert.Equal(t, tracingIDVal, labels[tracingIDKey])
+func TestParse(t *testing.T) {
+	resetTracingKeys()
+
+	tracingIDKey := "TracingID"
+	tracingIDValue := "TracingValue"
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, tracingIDKey, tracingIDValue)
+	labels := Parse(ctx)
+	require.Equal(t, tracingIDValue, labels[tracingIDKey])
 }

@@ -1,19 +1,25 @@
-package gotraceutil_test
+package gotraceutil
 
 import (
 	"context"
-	"testing"
 
 	"github.com/sirupsen/logrus"
-
-	"github.com/liangjunmo/gotraceutil"
 )
 
-func TestLogrusHook(t *testing.T) {
-	tracingIDKey := "TracingID"
-	tracingIDVal := "tracing-id"
+func ExampleLogrusHook() {
+	resetTracingKeys()
 
-	gotraceutil.SetTracingKeys([]string{tracingIDKey})
+	tracingIDKey := "TracingID"
+	tracingIDValue := "TracingValue"
+
+	SetTracingIDKey(tracingIDKey)
+
+	SetTracingIDGenerator(func() string {
+		return tracingIDValue
+	})
+
+	ctx := context.Background()
+	ctx = Trace(ctx)
 
 	log := logrus.New()
 
@@ -23,9 +29,7 @@ func TestLogrusHook(t *testing.T) {
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
 
-	log.AddHook(gotraceutil.NewLogrusHook())
+	log.AddHook(NewLogrusHook())
 
-	ctx := context.WithValue(context.Background(), tracingIDKey, tracingIDVal)
-
-	log.WithContext(ctx).Error("error message with TracingID")
+	log.WithContext(ctx).Error("message")
 }

@@ -9,20 +9,23 @@ import (
 )
 
 func GRPCUnaryServerInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
-	md, ok := metadata.FromIncomingContext(ctx)
+	md, exist := metadata.FromIncomingContext(ctx)
 
 	for _, key := range tracingKeys {
+		if !exist {
+			ctx = context.WithValue(ctx, key, "")
+			continue
+		}
+
+		mdKey := strings.ToLower(key)
+
+		vals, ok := md[mdKey]
 		if !ok {
 			ctx = context.WithValue(ctx, key, "")
+		} else if len(vals) == 0 {
+			ctx = context.WithValue(ctx, key, "")
 		} else {
-			vals, ok := md[strings.ToLower(key)]
-			if !ok {
-				ctx = context.WithValue(ctx, key, "")
-			} else if len(vals) == 0 {
-				ctx = context.WithValue(ctx, key, "")
-			} else {
-				ctx = context.WithValue(ctx, key, vals[0])
-			}
+			ctx = context.WithValue(ctx, key, vals[0])
 		}
 	}
 
@@ -34,8 +37,8 @@ func GRPCUnaryServerInterceptor(ctx context.Context, req any, info *grpc.UnarySe
 }
 
 func GRPCUnaryClientInterceptor(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	md, ok := metadata.FromOutgoingContext(ctx)
-	if !ok {
+	md, exist := metadata.FromOutgoingContext(ctx)
+	if !exist {
 		md = make(metadata.MD, len(tracingKeys))
 	}
 

@@ -1,19 +1,27 @@
 package gotraceutil
 
+const (
+	DefaultTracingIDKey = "TracingID"
+)
+
 var (
-	tracingIDKey = "TracingID"
+	tracingIDKey = DefaultTracingIDKey
 	tracingKeys  = []string{tracingIDKey}
 )
+
+func GetTracingIDKey() string {
+	return tracingIDKey
+}
+
+func SetTracingIDKey(key string) {
+	tracingIDKey = key
+	tracingKeys[0] = tracingIDKey
+}
 
 func GetTracingKeys() []string {
 	return tracingKeys
 }
 
-func SetTracingKeys(keys []string) {
-	if len(keys) == 0 {
-		panic("invalid tracingKeys")
-	}
-
-	tracingIDKey = keys[0]
-	tracingKeys = keys
+func AppendTracingKeys(keys []string) {
+	tracingKeys = append(tracingKeys, keys...)
 }

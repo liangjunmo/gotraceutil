@@ -1,4 +1,4 @@
-package gotraceutil_test
+package gotraceutil
 
 import (
 	"context"
@@ -8,32 +8,36 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
-	"github.com/stretchr/testify/assert"
-
-	"github.com/liangjunmo/gotraceutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGinMiddleware(t *testing.T) {
+	resetTracingKeys()
+
 	tracingIDKey := "TracingID"
-	tracingIDVal := "tracing-id"
+	tracingIDValue := "TracingValue"
 
 	clientIDKey := "ClientID"
-	clientIDVal := "client-id"
+	clientIDValue := "ClientValue"
 
-	gotraceutil.SetTracingKeys([]string{tracingIDKey, clientIDKey})
+	SetTracingIDKey(tracingIDKey)
 
-	gotraceutil.SetTracingIDGenerator(func() string {
-		return tracingIDVal
+	SetTracingIDGenerator(func() string {
+		return tracingIDValue
 	})
 
-	router := gin.Default()
+	AppendTracingKeys([]string{clientIDKey})
 
-	router.Use(gotraceutil.GinMiddleware())
+	gin.SetMode(gin.ReleaseMode)
+
+	router := gin.New()
+
+	router.Use(GinMiddleware())
 
 	router.GET("/", func(c *gin.Context) {
 		ctx := c.Request.Context()
-		assert.Equal(t, tracingIDVal, ctx.Value(tracingIDKey))
-		assert.Equal(t, clientIDVal, ctx.Value(clientIDKey))
+		require.Equal(t, tracingIDValue, ctx.Value(tracingIDKey))
+		require.Equal(t, clientIDValue, ctx.Value(clientIDKey))
 	})
 
 	server := &http.Server{
@@ -51,11 +55,11 @@ func TestGinMiddleware(t *testing.T) {
 
 	_, err := grequests.Get("http://127.0.0.1:8000/", &grequests.RequestOptions{
 		Headers: map[string]string{
-			clientIDKey: clientIDVal,
+			clientIDKey: clientIDValue,
 		},
 	})
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	err = server.Shutdown(context.Background())
-	assert.Nil(t, err)
+	require.Nil(t, err)
 }
