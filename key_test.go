@@ -7,12 +7,16 @@ import (
 )
 
 func TestGetTracingIDKey(t *testing.T) {
+	resetTracingKeys()
 	require.Equal(t, DefaultTracingIDKey, GetTracingIDKey())
 }
 
 func TestSetTracingIDKey(t *testing.T) {
+	resetTracingKeys()
+
 	tracingIDKey := "ContextID"
 	SetTracingIDKey(tracingIDKey)
+
 	require.Equal(t, tracingIDKey, GetTracingIDKey())
 }
 
