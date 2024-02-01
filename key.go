@@ -25,3 +25,8 @@ func GetTracingKeys() []string {
 func AppendTracingKeys(keys []string) {
 	tracingKeys = append(tracingKeys, keys...)
 }
+
+func resetTracingKeys() {
+	tracingIDKey = DefaultTracingIDKey
+	tracingKeys = []string{tracingIDKey}
+}

@@ -18,8 +18,7 @@ func ExampleLogrusHook() {
 		return tracingIDValue
 	})
 
-	ctx := context.Background()
-	ctx = Trace(ctx)
+	ctx := Trace(context.Background())
 
 	log := logrus.New()
 
