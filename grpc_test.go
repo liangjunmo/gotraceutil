@@ -31,8 +31,7 @@ func TestGRPCUnaryServerInterceptor(t *testing.T) {
 		clientIDKey: clientIDValue,
 	})
 
-	ctx := context.Background()
-	ctx = metadata.NewIncomingContext(ctx, md)
+	ctx := metadata.NewIncomingContext(context.Background(), md)
 
 	handler := func(ctx context.Context, req any) (any, error) {
 		require.Equal(t, tracingIDValue, ctx.Value(tracingIDKey))
@@ -62,14 +61,13 @@ func TestGRPCUnaryClientInterceptor(t *testing.T) {
 
 	AppendTracingKeys([]string{clientIDKey})
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, tracingIDKey, tracingIDValue)
-	ctx = context.WithValue(ctx, clientIDKey, clientIDValue)
-
 	md := metadata.New(map[string]string{
 		tracingIDKey: "",
 		clientIDKey:  "",
 	})
+
+	ctx := context.WithValue(context.Background(), tracingIDKey, tracingIDValue)
+	ctx = context.WithValue(ctx, clientIDKey, clientIDValue)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	handler := func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
