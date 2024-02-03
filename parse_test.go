@@ -13,9 +13,7 @@ func TestParse(t *testing.T) {
 	tracingIDKey := "TracingID"
 	tracingIDValue := "TracingValue"
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, tracingIDKey, tracingIDValue)
-
+	ctx := context.WithValue(context.Background(), tracingIDKey, tracingIDValue)
 	labels := Parse(ctx)
 	require.Equal(t, tracingIDValue, labels[tracingIDKey])
 }
