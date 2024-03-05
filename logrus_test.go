@@ -1,12 +1,16 @@
 package gotraceutil
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"testing"
 
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
 )
 
-func ExampleLogrusHook() {
+func TestLogrusHook(t *testing.T) {
 	resetTracingKeys()
 
 	tracingIDKey := "TracingID"
@@ -20,15 +24,21 @@ func ExampleLogrusHook() {
 
 	ctx := Trace(context.Background())
 
+	var (
+		buffer bytes.Buffer
+		fields logrus.Fields
+	)
+
 	log := logrus.New()
 
-	log.SetFormatter(&logrus.TextFormatter{
-		DisableQuote:    true,
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
+	log.SetFormatter(&logrus.JSONFormatter{})
+	log.SetOutput(&buffer)
 
 	log.AddHook(NewLogrusHook())
 
 	log.WithContext(ctx).Error("message")
+
+	err := json.Unmarshal(buffer.Bytes(), &fields)
+	require.Nil(t, err)
+	require.Equal(t, tracingIDValue, fields[tracingIDKey])
 }
